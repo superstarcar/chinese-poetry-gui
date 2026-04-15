@@ -67,6 +67,7 @@ class LauncherGUI:
         btn_frame.pack(pady=30)
         
         buttons = [
+            ("桌面悬浮窗", "Floating widget - 始终置顶", self.run_floating),
             ("标准版 GUI", "Classic dark theme", self.run_standard),
             ("豪华版 GUI", "Gradient background", self.run_luxury),
             ("命令行版", "Command line interface", self.run_cli),
@@ -117,6 +118,16 @@ class LauncherGUI:
         btn.bind('<Leave>', on_leave)
         
         return frame
+    
+    def run_floating(self):
+        """运行悬浮窗"""
+        self.root.withdraw()
+        try:
+            subprocess.run([sys.executable, 'poetry_floating.py'],
+                          cwd=os.path.dirname(os.path.abspath(__file__)))
+        except Exception as e:
+            print(f"Error: {e}")
+        self.root.deiconify()
     
     def run_standard(self):
         """运行标准版"""
