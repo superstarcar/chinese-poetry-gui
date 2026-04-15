@@ -228,6 +228,33 @@ class FloatingPoetry:
                            fg=self.COLORS['text'], bg=self.COLORS['bg'])
             label.pack(anchor='w', pady=1)
             self.poem_labels.append(label)
+        
+        # 根据内容调整窗口高度
+        self._adjust_window_height(len(paragraphs))
+    
+    def _adjust_window_height(self, line_count):
+        """根据诗词行数调整窗口高度"""
+        # 基础高度（标题、作者、边距等）
+        base_height = 150
+        # 每行高度
+        line_height = 22
+        # 计算内容高度
+        content_height = line_count * line_height
+        # 总高度
+        total_height = base_height + content_height
+        
+        # 限制高度范围
+        min_height = 200
+        max_height = 500
+        new_height = max(min_height, min(total_height, max_height))
+        
+        # 更新窗口大小
+        screen_w = self.root.winfo_screenwidth()
+        screen_h = self.root.winfo_screenheight()
+        x = screen_w - self.win_w - 30
+        y = screen_h - new_height - 80
+        
+        self.root.geometry(f"{self.win_w}x{new_height}+{x}+{y}")
     
     def _refresh(self):
         """刷新诗词"""
