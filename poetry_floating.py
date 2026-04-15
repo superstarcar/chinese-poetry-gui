@@ -68,6 +68,10 @@ class FloatingPoetry:
         self.root.bind('<ButtonRelease-1>', self._stop_drag)
         self.root.bind('<Double-Button-1>', lambda e: self._refresh())
         self.root.bind('<Button-3>', self._show_menu)
+        self.root.bind('<MouseWheel>', self._on_mousewheel)
+        
+        # 当前透明度
+        self.current_alpha = self.COLORS['bg_alpha']
     
     def _find_data_path(self, folder_name):
         """查找数据文件夹的路径"""
@@ -243,9 +247,9 @@ class FloatingPoetry:
         # 总高度
         total_height = base_height + content_height
         
-        # 限制高度范围
+        # 限制高度范围 - 增大最大高度
         min_height = 200
-        max_height = 500
+        max_height = 800
         new_height = max(min_height, min(total_height, max_height))
         
         # 更新窗口大小
@@ -279,6 +283,21 @@ class FloatingPoetry:
         """停止拖动"""
         self.drag_data['dragging'] = False
     
+    def _on_mousewheel(self, event):
+        """滚轮调节透明度"""
+        # 向上滚增加透明度，向下滚减少
+        if event.delta > 0:
+            self.current_alpha = min(1.0, self.current_alpha + 0.05)
+        else:
+            self.current_alpha = max(0.3, self.current_alpha - 0.05)
+        
+        self.root.attributes('-alpha', self.current_alpha)
+    
+    def _set_alpha(self, alpha):
+        """设置透明度"""
+        self.current_alpha = alpha
+        self.root.attributes('-alpha', alpha)
+    
     def _show_menu(self, event):
         """显示右键菜单"""
         menu = tk.Menu(self.root, tearoff=0,
@@ -294,7 +313,22 @@ class FloatingPoetry:
         menu.add_command(label="  只看宋词  ", command=lambda: self._filter_type('宋词'))
         menu.add_command(label="  随机诗词  ", command=lambda: self._load_poem(True))
         menu.add_separator()
+        
+        # 透明度子菜单
+        alpha_menu = tk.Menu(menu, tearoff=0,
+                            bg=self.COLORS['bg'],
+                            fg=self.COLORS['text'],
+                            activebackground=self.COLORS['gold_dark'],
+                            font=('Microsoft YaHei', 9))
+        alpha_menu.add_command(label="  90% (默认)  ", command=lambda: self._set_alpha(0.9))
+        alpha_menu.add_command(label="  80%  ", command=lambda: self._set_alpha(0.8))
+        alpha_menu.add_command(label="  70%  ", command=lambda: self._set_alpha(0.7))
+        alpha_menu.add_command(label="  60%  ", command=lambda: self._set_alpha(0.6))
+        alpha_menu.add_command(label="  50%  ", command=lambda: self._set_alpha(0.5))
+        menu.add_cascade(label="  透明度  ", menu=alpha_menu)
+        
         menu.add_command(label="  开机自启  ", command=self._set_autostart)
+        menu.add_separator()
         menu.add_command(label="  退出  ", command=self.root.destroy)
         
         menu.post(event.x_root, event.y_root)
