@@ -49,8 +49,8 @@ class PoetryGUI:
         
         # 初始化数据
         self.base_path = Path(__file__).parent
-        self.tang_poetry_path = self.base_path / "全唐诗"
-        self.song_poetry_path = self.base_path / "宋词"
+        self.tang_poetry_path = self._find_data_path("全唐诗")
+        self.song_poetry_path = self._find_data_path("宋词")
         self.history_file = self.base_path / "daily_poetry_history.json"
         
         self._tang_poems = None
@@ -65,6 +65,20 @@ class PoetryGUI:
         self._create_styles()
         self._create_widgets()
         self._load_today_poem()
+    
+    def _find_data_path(self, folder_name):
+        """查找数据文件夹的路径"""
+        possible_paths = [
+            self.base_path / folder_name,
+            self.base_path.parent / "chinese-poetry" / folder_name,
+            self.base_path.parent / folder_name,
+            Path("chinese-poetry") / folder_name,
+            Path(folder_name),
+        ]
+        for p in possible_paths:
+            if p.exists():
+                return p
+        return self.base_path / folder_name
         
     def _create_styles(self):
         """创建自定义样式"""
