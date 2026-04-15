@@ -49,10 +49,10 @@ class FloatingPoetry:
         # 拖动相关
         self.drag_data = {'x': 0, 'y': 0, 'dragging': False}
         
-        # 数据路径
+        # 数据路径 - 自动查找多个可能位置
         self.base_path = Path(__file__).parent
-        self.tang_path = self.base_path / "全唐诗"
-        self.song_path = self.base_path / "宋词"
+        self.tang_path = self._find_data_path("全唐诗")
+        self.song_path = self._find_data_path("宋词")
         
         self._tang_poems = None
         self._song_poems = None
@@ -68,6 +68,24 @@ class FloatingPoetry:
         self.root.bind('<ButtonRelease-1>', self._stop_drag)
         self.root.bind('<Double-Button-1>', lambda e: self._refresh())
         self.root.bind('<Button-3>', self._show_menu)
+    
+    def _find_data_path(self, folder_name):
+        """查找数据文件夹的路径"""
+        # 可能的路径列表
+        possible_paths = [
+            self.base_path / folder_name,                    # 当前目录
+            self.base_path.parent / "chinese-poetry" / folder_name,  # 上级的chinese-poetry
+            self.base_path.parent / folder_name,             # 上级目录
+            Path("chinese-poetry") / folder_name,            # 相对路径
+            Path(folder_name),                               # 直接相对路径
+        ]
+        
+        for p in possible_paths:
+            if p.exists():
+                return p
+        
+        # 如果都找不到，返回默认路径
+        return self.base_path / folder_name
         
     def _create_ui(self):
         """创建界面"""
