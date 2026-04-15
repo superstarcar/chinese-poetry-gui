@@ -239,17 +239,17 @@ class FloatingPoetry:
     def _adjust_window_height(self, line_count):
         """根据诗词行数调整窗口高度"""
         # 基础高度（标题、作者、边距等）
-        base_height = 150
-        # 每行高度
-        line_height = 22
+        base_height = 160
+        # 每行高度（包含间距）
+        line_height = 28
         # 计算内容高度
         content_height = line_count * line_height
         # 总高度
         total_height = base_height + content_height
         
-        # 限制高度范围 - 增大最大高度
+        # 限制高度范围
         min_height = 200
-        max_height = 800
+        max_height = 1500  # 最大高度
         new_height = max(min_height, min(total_height, max_height))
         
         # 更新窗口大小
